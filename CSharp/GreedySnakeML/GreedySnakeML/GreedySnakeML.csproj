@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LostTech.TensorFlow.Python" Version="0.1.15.301" />
+    <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.CpuMath" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.DataView" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.TensorFlow" Version="2.0.1" />
+    <PackageReference Include="NumSharp" Version="0.30.0" />
+    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.11.3" />
+    <PackageReference Include="TensorFlow.Keras" Version="0.10.5" />
+    <PackageReference Include="TensorFlow.NET" Version="0.100.5" />
+  </ItemGroup>
+
+</Project>
