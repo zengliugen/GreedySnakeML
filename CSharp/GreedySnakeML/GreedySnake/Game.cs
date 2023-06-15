@@ -60,103 +60,39 @@
     }
     public class Game
     {
-        public Int32 Width;
-        public Int32 Height;
-        public Int32 GridCount;
+        public const Int32 Width = 50;
+        public const Int32 Height = 50;
+        public const Int32 GridCount = Width * Height;
+
         public EGridType[,] Map;
         public List<Position> Snake;
+        public EDirection SnakeDirection;
+        public Position FoodPosition;
         public Random Random;
-        public Int32 Score;
+
         public EGameState GameState;
-        public EDirection LastMoveDirection = EDirection.Up;
-        public Int32 FrameIndex = 0;
-        public Game(Int32 width, Int32 height)
+        public Int32 Score;
+        public Int32 FrameIndex;
+        public Game()
         {
-            this.Width = width;
-            this.Height = height;
-            this.GridCount = this.Width * this.Height;
-            this.Map = new EGridType[this.Width, this.Height];
+            this.Map = new EGridType[Width, Height];
             this.Snake = new List<Position>();
+            this.SnakeDirection = EDirection.Up;
+            this.FoodPosition = new Position(-1, -1);
             this.Random = new Random();
-            this.Score = 0;
             this.GameState = EGameState.Runinig;
+            this.Score = 0;
             this.FrameIndex = 0;
 
             this.Initialize();
         }
-        private void Initialize()
+        public void Reset()
         {
-            this.InitializeMap();
-            this.InitializeSnake();
-            this.CreateFood();
-        }
-        private void InitializeMap()
-        {
-            for (var i = 0; i < this.Width; i++)
-            {
-                for (var j = 0; j < this.Height; j++)
-                {
-                    if (i == 0 || i == this.Width - 1 || j == 0 || j == this.Height - 1)
-                    {
-                        this.Map[i, j] = EGridType.Wall;
-                    }
-                    else
-                    {
-                        this.Map[i, j] = EGridType.Road;
-                    }
-                }
-            }
-        }
-        private void InitializeSnake()
-        {
-            var snakePosition = new Position(this.Width / 2, (this.Height / 2) - 2);
-            this.Snake.Add(snakePosition);
-            this.Snake.Add(snakePosition + new Position(0, 1));
-            this.Snake.Add(snakePosition + new Position(0, 2));
-            this.Snake.Add(snakePosition + new Position(0, 3));
-            for (var i = 0; i < this.Snake.Count; i++)
-            {
-                this.SetMapGrid(this.Snake[i], i == 0 ? EGridType.SnakeHead : EGridType.SnakeBody);
-            }
-            this.LastMoveDirection = EDirection.Up;
-        }
-        private void CreateFood()
-        {
-            var foodPosition = this.RandomFoodPosition();
-            this.SetMapGrid(foodPosition, EGridType.Food);
-        }
-        private void SetMapGrid(Position position, EGridType gridType)
-        {
-            this.Map[position.X, position.Y] = gridType;
-        }
-        private Position RandomFoodPosition()
-        {
-            var count = this.Random.Next(this.GridCount);
-            while (true)
-            {
-                var x = count / this.Width;
-                var y = count % this.Width;
-                if (this.Map[x, y] == EGridType.Road)
-                {
-                    return new Position(x, y);
-                }
-                count++;
-                count %= this.GridCount;
-            }
-        }
-        private Boolean CheckIsWin()
-        {
-            for (var i = 0; i < this.Width; i++)
-            {
-                for (var j = 0; j < this.Width; j++)
-                {
-                    if (this.Map[i, j] == EGridType.Road)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            this.GameState = EGameState.Runinig;
+            this.Score = 0;
+            this.FrameIndex = 0;
+
+            this.Initialize();
         }
         public void SnakeMove(EDirection direction)
         {
@@ -164,28 +100,28 @@
             switch (direction)
             {
                 case EDirection.Up:
-                    if (this.LastMoveDirection == EDirection.Down)
+                    if (this.SnakeDirection == EDirection.Down)
                     {
                         return;
                     }
                     movePosition = new Position(0, -1);
                     break;
                 case EDirection.Down:
-                    if (this.LastMoveDirection == EDirection.Up)
+                    if (this.SnakeDirection == EDirection.Up)
                     {
                         return;
                     }
                     movePosition = new Position(0, 1);
                     break;
                 case EDirection.Left:
-                    if (this.LastMoveDirection == EDirection.Right)
+                    if (this.SnakeDirection == EDirection.Right)
                     {
                         return;
                     }
                     movePosition = new Position(-1, 0);
                     break;
                 case EDirection.Right:
-                    if (this.LastMoveDirection == EDirection.Left)
+                    if (this.SnakeDirection == EDirection.Left)
                     {
                         return;
                     }
@@ -202,8 +138,16 @@
                 this.SetMapGrid(snakeHeadPosition, EGridType.SnakeBody);
                 this.Snake.Insert(0, nextSnakeHeadPosition);
                 this.SetMapGrid(nextSnakeHeadPosition, EGridType.SnakeHead);
-                this.CreateFood();
                 this.Score++;
+                if (this.CheckIsWin())
+                {
+                    this.GameState = EGameState.Win;
+                    this.FoodPosition = new Position(-1, -1);
+                }
+                else
+                {
+                    this.CreateFood();
+                }
             }
             else
             {
@@ -216,18 +160,89 @@
                 if (nextGridType == EGridType.Road)
                 {
                     this.SetMapGrid(nextSnakeHeadPosition, EGridType.SnakeHead);
-                    if (this.CheckIsWin())
-                    {
-                        this.GameState = EGameState.Win;
-                    }
                 }
                 else
                 {
                     this.GameState = EGameState.Lose;
                 }
             }
-            this.LastMoveDirection = direction;
+            this.SnakeDirection = direction;
             this.FrameIndex++;
+        }
+        private void Initialize()
+        {
+            this.InitializeMap();
+            this.InitializeSnake();
+            this.CreateFood();
+        }
+        private void InitializeMap()
+        {
+            for (var i = 0; i < Width; i++)
+            {
+                for (var j = 0; j < Height; j++)
+                {
+                    if (i == 0 || i == Width - 1 || j == 0 || j == Height - 1)
+                    {
+                        this.Map[i, j] = EGridType.Wall;
+                    }
+                    else
+                    {
+                        this.Map[i, j] = EGridType.Road;
+                    }
+                }
+            }
+        }
+        private void InitializeSnake()
+        {
+            this.Snake.Clear();
+            var snakePosition = new Position(Width / 2, (Height / 2) - 2);
+            this.Snake.Add(snakePosition);
+            this.Snake.Add(snakePosition + new Position(0, 1));
+            this.Snake.Add(snakePosition + new Position(0, 2));
+            this.Snake.Add(snakePosition + new Position(0, 3));
+            for (var i = 0; i < this.Snake.Count; i++)
+            {
+                this.SetMapGrid(this.Snake[i], i == 0 ? EGridType.SnakeHead : EGridType.SnakeBody);
+            }
+            this.SnakeDirection = EDirection.Up;
+        }
+        private void CreateFood()
+        {
+            this.FoodPosition = this.RandomFoodPosition();
+            this.SetMapGrid(this.FoodPosition, EGridType.Food);
+        }
+        private void SetMapGrid(Position position, EGridType gridType)
+        {
+            this.Map[position.X, position.Y] = gridType;
+        }
+        private Position RandomFoodPosition()
+        {
+            var count = this.Random.Next(GridCount);
+            while (true)
+            {
+                var x = count / Width;
+                var y = count % Width;
+                if (this.Map[x, y] == EGridType.Road)
+                {
+                    return new Position(x, y);
+                }
+                count++;
+                count %= GridCount;
+            }
+        }
+        private Boolean CheckIsWin()
+        {
+            for (var i = 0; i < Width; i++)
+            {
+                for (var j = 0; j < Width; j++)
+                {
+                    if (this.Map[i, j] == EGridType.Road)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }

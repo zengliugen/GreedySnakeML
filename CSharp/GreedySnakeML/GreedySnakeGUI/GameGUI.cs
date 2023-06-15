@@ -13,7 +13,7 @@ namespace GreedySnakeGUI
         {
             this.InitializeComponent();
 
-            this.Game = new Game(50, 50);
+            this.Game = new Game();
 
             this.GameImage = new Bitmap(550, 600);
             this.GameImageGraphics = Graphics.FromImage(this.GameImage);
@@ -26,15 +26,15 @@ namespace GreedySnakeGUI
         }
         public void RestartGame()
         {
-            this.Game = new Game(50, 50);
+            this.Game.Reset();
             this.DrawGame();
         }
         public void DrawGame()
         {
             this.GameImageGraphics.Clear(Color.White);
-            for (var i = 0; i < this.Game.Width; i++)
+            for (var i = 0; i < Game.Width; i++)
             {
-                for (var j = 0; j < this.Game.Height; j++)
+                for (var j = 0; j < Game.Height; j++)
                 {
                     var gridType = this.Game.Map[i, j];
                     Brush brush;
