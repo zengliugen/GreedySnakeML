@@ -2,5 +2,4 @@
 //Console.WriteLine("Hello, World!");
 using GreedySnakeML;
 
-var ml = new ML();
-ml.Run();
+ML.run();

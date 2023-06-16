@@ -63,23 +63,24 @@
         public const Int32 Width = 50;
         public const Int32 Height = 50;
         public const Int32 GridCount = Width * Height;
+        public const Int32 GridTypeMax = 4;
 
+        public Random Random;
         public EGridType[,] Map;
         public List<Position> Snake;
         public EDirection SnakeDirection;
         public Position FoodPosition;
-        public Random Random;
 
         public EGameState GameState;
         public Int32 Score;
         public Int32 FrameIndex;
-        public Game()
+        public Game(Int32 seed = 0)
         {
+            this.Random = seed == 0 ? new Random() : new Random(seed);
             this.Map = new EGridType[Width, Height];
             this.Snake = new List<Position>();
             this.SnakeDirection = EDirection.Up;
             this.FoodPosition = new Position(-1, -1);
-            this.Random = new Random();
             this.GameState = EGameState.Runinig;
             this.Score = 0;
             this.FrameIndex = 0;
@@ -88,6 +89,8 @@
         }
         public void Reset()
         {
+            this.SnakeDirection = EDirection.Up;
+            this.FoodPosition = new Position(-1, -1);
             this.GameState = EGameState.Runinig;
             this.Score = 0;
             this.FrameIndex = 0;
@@ -163,6 +166,7 @@
                 }
                 else
                 {
+                    this.Score = 0;
                     this.GameState = EGameState.Lose;
                 }
             }

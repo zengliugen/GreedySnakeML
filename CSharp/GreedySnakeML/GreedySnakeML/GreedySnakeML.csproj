@@ -12,4 +12,8 @@
     <PackageReference Include="TensorFlow.NET" Version="0.100.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GreedySnake\GreedySnake.csproj" />
+  </ItemGroup>
+
 </Project>
