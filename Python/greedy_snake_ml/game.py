@@ -19,6 +19,8 @@ model_path = "./model/GreddySnake-v0.model"
 model_buffer_path = "./model/GreddySnake-v0.model_buffer"
 tensorboard_log_path = "./tensorboard/GreddySnake-v0/"
 
+####### test env ########
+
 # env = gym.make('GreedySnakeWorld-v0', render_mode="human", render_fps=30)
 
 # observation, info = env.reset()
@@ -51,70 +53,81 @@ tensorboard_log_path = "./tensorboard/GreddySnake-v0/"
 #     if terminated:
 #         env.reset()
 
-# env = gym.make('GreedySnakeWorld-v0', render_mode="human", render_fps=300)
-# env = gym.make('GreedySnakeWorld-v0')
+# env.close()
 
-# env = DummyVecEnv([lambda: env])
+####### test env ########
 
-# # while True:
-# model = None
-
-# if os.path.exists(model_path):
-#     model = DQN.load(model_path)
-#     model.load_replay_buffer(model_buffer_path)
-# else:
-#     model = DQN(
-#         "MlpPolicy",
-#         env=env,
-#         learning_rate=2.3e-3,
-#         batch_size=64,
-#         buffer_size=100000,
-#         learning_starts=1000,
-#         gamma=0.99,
-#         target_update_interval=10,
-#         train_freq=256,
-#         gradient_steps=128,
-#         exploration_fraction=0.16,
-#         exploration_final_eps=0.04,
-#         policy_kwargs={"net_arch": [256, 256]},
-#         verbose=1,
-#         tensorboard_log=tensorboard_log_path,
-#         device="cuda",
-#     )
-
-# model.set_env(env, force_reset=True)
-
-# model.learn(total_timesteps=1e6)
-
-# model.save(model_path)
-
-# model.save_replay_buffer(model_buffer_path)
+####### learn model ########
 
 env = gym.make('GreedySnakeWorld-v0', render_mode="human",
                world_size=50, render_fps=120)
 # env = gym.make('GreedySnakeWorld-v0')
 
-env = DummyVecEnv([lambda: env])
+# while True:
+model = None
 
-model = DQN.load(model_path)
+if os.path.exists(model_path):
+    model = DQN.load(model_path)
+    model.load_replay_buffer(model_buffer_path)
+else:
+    model = DQN(
+        "MlpPolicy",
+        env=env,
+        learning_rate=2.3e-3,
+        batch_size=64,
+        buffer_size=100000,
+        learning_starts=1000,
+        gamma=0.99,
+        target_update_interval=10,
+        train_freq=256,
+        gradient_steps=128,
+        exploration_fraction=0.16,
+        exploration_final_eps=0.04,
+        policy_kwargs={"net_arch": [256, 256]},
+        verbose=1,
+        tensorboard_log=tensorboard_log_path,
+        device="cuda",
+    )
 
-observation = env.reset()
+model.set_env(env, force_reset=True)
 
-best_score = 0
+model.learn(total_timesteps=1e6)
 
-for i in range(0, 100):
-    score = 0
-    terminated = False
+model.save(model_path)
 
-    while not terminated:
-        action, _ = model.predict(observation=observation)
-        observation, reward, terminated, info = env.step(action)
-        score += reward
-        env.render()
-    if score > best_score:
-        best_score = score
-    print("index:{} score:{} best_score:{}".format(i, score, best_score))
+model.save_replay_buffer(model_buffer_path)
 
 env.close()
 
-print("over")
+####### learn model ########
+
+####### test model########
+
+# env = gym.make('GreedySnakeWorld-v0', render_mode="human",
+#                world_size=50, render_fps=120)
+# # env = gym.make('GreedySnakeWorld-v0')
+
+# env = DummyVecEnv([lambda: env])
+
+# model = DQN.load(model_path)
+
+# observation = env.reset()
+
+# best_score = 0
+
+# for i in range(0, 100):
+#     score = 0
+#     terminated = False
+
+#     while not terminated:
+#         action, _ = model.predict(observation=observation)
+#         observation, reward, terminated, info = env.step(action)
+#         score += reward
+#         env.render()
+#     if score > best_score:
+#         best_score = score
+#     print("index:{} score:{} best_score:{}".format(i, score, best_score))
+
+# env.close()
+
+####### test model########
